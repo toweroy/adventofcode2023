@@ -16,7 +16,7 @@ func check(e error) {
 	}
 }
 
-func getLetter(s string) (int) {
+func getLetter(s string) int {
 	if strings.HasPrefix(s, "one") {
 		return 1
 	}
@@ -77,7 +77,7 @@ func main() {
 		var last int
 		if len(nums) > 1 {
 			first = nums[0] * 10
-			last = nums[len(nums) - 1]
+			last = nums[len(nums)-1]
 		} else {
 			first = nums[0] * 10
 			last = nums[0]

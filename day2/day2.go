@@ -15,6 +15,7 @@ func check(e error) {
 		panic(e)
 	}
 }
+
 // 12 red cubes, 13 green cubes, and 14 blue cubes
 const RED int = 12
 const GREEN int = 13
@@ -46,14 +47,14 @@ func partTwo(s *bufio.Scanner) {
 		s2 := s1[1]
 		// [7 blue, 9 red, 1 green] [8 green] [10 green, 5 blue, 3 red] [11 blue, 5 red, 1 green]
 		draws := strings.Split(s2, ";")
-		
+
 		sum += minimumCubes(draws, gameId)
 	}
 
 	fmt.Printf("SUM = %d", sum)
 }
 
-func minimumCubes(draws []string, gameId int) (int) {
+func minimumCubes(draws []string, gameId int) int {
 	var lRed, lBlue, lGreen int
 
 	for _, d := range draws {
@@ -103,8 +104,8 @@ func partOne(s *bufio.Scanner) {
 		s2 := s1[1]
 		// [7 blue, 9 red, 1 green] [8 green] [10 green, 5 blue, 3 red] [11 blue, 5 red, 1 green]
 		draws := strings.Split(s2, ";")
-		
-		if  validGameId(draws, gameId) {
+
+		if validGameId(draws, gameId) {
 			validGameIdSums += gameId
 		}
 	}
@@ -112,7 +113,7 @@ func partOne(s *bufio.Scanner) {
 	fmt.Printf("SUM = %d", validGameIdSums)
 }
 
-func validGameId(draws []string, gameId int) (bool) {
+func validGameId(draws []string, gameId int) bool {
 	for i, d := range draws {
 		colors := strings.Split(d, ",")
 		colorCount := make(map[string]int)

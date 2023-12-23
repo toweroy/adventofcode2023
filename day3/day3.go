@@ -10,18 +10,18 @@ import (
 const input string = "day3/example-input.txt"
 
 type Location struct {
-	row		int
-	start	int
-	end		int
+	row   int
+	start int
+	end   int
 }
 
 type PartNumber struct {
-	number 		int
+	number int
 	*Location
 }
 
 type Symbol struct {
-	value		string
+	value string
 	*Location
 }
 
@@ -58,7 +58,7 @@ func parsePartNumbers(s *bufio.Scanner) ([]*PartNumber, []*Symbol) {
 
 			if err == nil {
 				fmt.Printf("Found number %s", str)
-				
+
 				if prev == "" || !prevWasInt {
 					prev = str
 				} else {
@@ -76,17 +76,17 @@ func parsePartNumbers(s *bufio.Scanner) ([]*PartNumber, []*Symbol) {
 					number: partNumber,
 					Location: &Location{
 						row,
-						i,
-						i + len(str),
+						i - len(prev),
+						i - 1,
 					},
 				})
 				prevWasInt = false
-				
+
 				if str != "." {
 					fmt.Printf("Found symbol %s\n", str)
 					prev = str
 					symbols = append(symbols, &Symbol{
-						value:   str,
+						value: str,
 						Location: &Location{
 							row,
 							i,
@@ -99,7 +99,7 @@ func parsePartNumbers(s *bufio.Scanner) ([]*PartNumber, []*Symbol) {
 				fmt.Printf("Found symbol %s\n", str)
 				prev = str
 				symbols = append(symbols, &Symbol{
-					value:   str,
+					value: str,
 					Location: &Location{
 						row,
 						i,
@@ -108,7 +108,7 @@ func parsePartNumbers(s *bufio.Scanner) ([]*PartNumber, []*Symbol) {
 				})
 			}
 		}
-		
+
 		prevWasInt = false
 		prev = ""
 		row++
