@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 )
 
 const input string = "day3/example-input.txt"
@@ -25,9 +26,19 @@ func main() {
 func partOne(s *bufio.Scanner) {
 	fmt.Println("Part I")
 
-	// for s.Scan() {
-	// 	text := s.Text()
-	// }
+	for s.Scan() {
+		text := s.Text()
+		var current string
 
-	// fmt.Printf("SUM = %d", sum)
+		for i := 0; i < len(text); i++ {
+			str := string(text[i])
+			_, err := strconv.Atoi(str)
+			if err != nil {
+				// check(err)
+			}
+			current += str
+		}
+
+		fmt.Printf("Number = %s", current)
+	}
 }
