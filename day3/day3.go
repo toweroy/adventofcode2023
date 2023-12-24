@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 )
 
@@ -28,8 +29,9 @@ func check(e error) {
 	}
 }
 
+// Get all symbols [^\.|^(\d)] = 759
+// Get all numbers (\d+) = 1211
 func Day3(input string) {
-	fmt.Println("Day 3")
 	f, err := os.Open(input)
 	check(err)
 	s := bufio.NewScanner(f)
@@ -37,15 +39,27 @@ func Day3(input string) {
 	fmt.Printf("%d numbers parsed\n", len(pn))
 	fmt.Printf("%d symbols parsed\n", len(sym))
 	vPn := getValidPartNumbers(pn, sym)
+
+	var allPn []int
+	for _, v := range pn {
+		for _, part := range v {
+			allPn = append(allPn, part.number)
+		}
+	}
+
 	var sum int
-	for _, v := range vPn {
-		sum += v.number
+	for _, v := range allPn {
+		if slices.Contains(vPn, v) {
+			sum += v
+		}
 	}
 	fmt.Printf("SUM = %d\n", sum)
 }
 
 func parsePartNumbers(s *bufio.Scanner) (map[int][]*PartNumber, map[int][]*Symbol) {
 	fmt.Println("Part I")
+	var totalParts int
+	var totalSymbols int
 	parts := map[int][]*PartNumber{}
 	symbols := map[int][]*Symbol{}
 	row := 0
@@ -60,15 +74,15 @@ func parsePartNumbers(s *bufio.Scanner) (map[int][]*PartNumber, map[int][]*Symbo
 			_, err := strconv.Atoi(str)
 
 			if err == nil {
-				fmt.Printf("Found number %s", str)
+				// fmt.Printf("Found number %s", str)
 
 				if prev == "" || !prevWasInt {
 					prev = str
 				} else {
-					fmt.Printf(" appending %s", str)
+					// fmt.Printf(" appending %s", str)
 					prev += str
 				}
-				fmt.Printf("\n")
+				// fmt.Printf("\n")
 				prevWasInt = true
 			} else if prevWasInt {
 				partNumber, err := strconv.Atoi(prev)
@@ -86,11 +100,9 @@ func parsePartNumbers(s *bufio.Scanner) (map[int][]*PartNumber, map[int][]*Symbo
 				} else {
 					parts[row] = append(parts[row], newP)
 				}
-
-				prevWasInt = false
-
+				
 				if str != "." {
-					fmt.Printf("Found symbol %s\n", str)
+					// fmt.Printf("Found symbol %s\n", str)
 					prev = str
 					newSym := &Symbol{
 						value: str,
@@ -101,13 +113,17 @@ func parsePartNumbers(s *bufio.Scanner) (map[int][]*PartNumber, map[int][]*Symbo
 					}
 					if _, hasKey := symbols[row]; !hasKey {
 						symbols[row] = []*Symbol{newSym}
-					} else {
-						symbols[row] = append(symbols[row], newSym)
+						} else {
+							symbols[row] = append(symbols[row], newSym)
+						}
+						totalSymbols++
 					}
-				}
+
+				totalParts++
+				prevWasInt = false
 			} else if str != "." {
 				prevWasInt = false
-				fmt.Printf("Found symbol %s\n", str)
+				// fmt.Printf("Found symbol %s\n", str)
 				prev = str
 				newSym := &Symbol{
 					value: str,
@@ -121,6 +137,7 @@ func parsePartNumbers(s *bufio.Scanner) (map[int][]*PartNumber, map[int][]*Symbo
 				} else {
 					symbols[row] = append(symbols[row], newSym)
 				}
+				totalSymbols++
 			}
 		}
 
@@ -129,23 +146,27 @@ func parsePartNumbers(s *bufio.Scanner) (map[int][]*PartNumber, map[int][]*Symbo
 		row++
 	}
 
+	fmt.Printf("Found %d numbers\n", totalParts)
+	fmt.Printf("Found %d symbols\n", totalSymbols)
 	return parts, symbols
 }
 
-func getValidPartNumbers(parts map[int][]*PartNumber, symbols map[int][]*Symbol) []*PartNumber {
-	var validParts []*PartNumber
+func getValidPartNumbers(parts map[int][]*PartNumber, symbols map[int][]*Symbol) []int {
+	var validParts []int
 	for key, value := range parts {
 		for _, v := range value {
 			fmt.Printf("Part number: %d in row %d", v.number, key)
 			hasSymbol := hasSymbolAround(key, v, symbols)
 			if hasSymbol {
 				fmt.Printf(" is connected ✅\n")
-				validParts = append(validParts, v)
+				// fmt.Printf("%d\n", v.number)
+				validParts = append(validParts, v.number)
 			} else {
 				fmt.Printf(" not connected ❌\n")
 			}
 		}
 	}
+	fmt.Printf("Found %d valid part numbers\n", len(validParts))
 	return validParts
 }
 
