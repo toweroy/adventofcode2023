@@ -7,10 +7,7 @@ import (
 	"strconv"
 )
 
-const input string = "day3/example-input.txt"
-
 type Location struct {
-	row   int
 	start int
 	end   int
 }
@@ -31,7 +28,7 @@ func check(e error) {
 	}
 }
 
-func main() {
+func Day3(input string) {
 	fmt.Println("Day 3")
 	f, err := os.Open(input)
 	check(err)
@@ -39,12 +36,18 @@ func main() {
 	pn, sym := parsePartNumbers(s)
 	fmt.Printf("%d numbers parsed\n", len(pn))
 	fmt.Printf("%d symbols parsed\n", len(sym))
+	vPn := getValidPartNumbers(pn, sym)
+	var sum int
+	for _, v := range vPn {
+		sum += v.number
+	}
+	fmt.Printf("SUM = %d\n", sum)
 }
 
-func parsePartNumbers(s *bufio.Scanner) ([]*PartNumber, []*Symbol) {
+func parsePartNumbers(s *bufio.Scanner) (map[int][]*PartNumber, map[int][]*Symbol) {
 	fmt.Println("Part I")
-	parts := []*PartNumber{}
-	symbols := []*Symbol{}
+	parts := map[int][]*PartNumber{}
+	symbols := map[int][]*Symbol{}
 	row := 0
 
 	for s.Scan() {
@@ -72,40 +75,52 @@ func parsePartNumbers(s *bufio.Scanner) ([]*PartNumber, []*Symbol) {
 				if err != nil {
 					check(err)
 				}
-				parts = append(parts, &PartNumber{
+				newP := &PartNumber{
 					number: partNumber,
 					Location: &Location{
-						row,
 						i - len(prev),
 						i - 1,
-					},
-				})
+					}}
+				if _, hasKey := parts[row]; !hasKey {
+					parts[row] = []*PartNumber{newP}
+				} else {
+					parts[row] = append(parts[row], newP)
+				}
+
 				prevWasInt = false
 
 				if str != "." {
 					fmt.Printf("Found symbol %s\n", str)
 					prev = str
-					symbols = append(symbols, &Symbol{
+					newSym := &Symbol{
 						value: str,
 						Location: &Location{
-							row,
 							i,
 							i,
 						},
-					})
+					}
+					if _, hasKey := symbols[row]; !hasKey {
+						symbols[row] = []*Symbol{newSym}
+					} else {
+						symbols[row] = append(symbols[row], newSym)
+					}
 				}
 			} else if str != "." {
 				prevWasInt = false
 				fmt.Printf("Found symbol %s\n", str)
 				prev = str
-				symbols = append(symbols, &Symbol{
+				newSym := &Symbol{
 					value: str,
 					Location: &Location{
-						row,
 						i,
 						i,
 					},
-				})
+				}
+				if _, hasKey := symbols[row]; !hasKey {
+					symbols[row] = []*Symbol{newSym}
+				} else {
+					symbols[row] = append(symbols[row], newSym)
+				}
 			}
 		}
 
@@ -115,4 +130,41 @@ func parsePartNumbers(s *bufio.Scanner) ([]*PartNumber, []*Symbol) {
 	}
 
 	return parts, symbols
+}
+
+func getValidPartNumbers(parts map[int][]*PartNumber, symbols map[int][]*Symbol) []*PartNumber {
+	var validParts []*PartNumber
+	for key, value := range parts {
+		for _, v := range value {
+			fmt.Printf("Part number: %d in row %d", v.number, key)
+			hasSymbol := hasSymbolAround(key, v, symbols)
+			if hasSymbol {
+				fmt.Printf(" is connected ✅\n")
+				validParts = append(validParts, v)
+			} else {
+				fmt.Printf(" not connected ❌\n")
+			}
+		}
+	}
+	return validParts
+}
+
+func hasSymbolAround(row int, part *PartNumber, symbols map[int][]*Symbol) bool {
+	r := []int{-1, 0, 1}
+
+	if row == 0 {
+		r = []int{0, 1}
+	}
+
+	for _, v := range r {
+		if s, hasKey := symbols[row + v]; hasKey {
+			for i := 0; i < len(s); i++ {
+				if s[i].start >= part.start - 1 && s[i].start <= part.end + 1 {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
 }
