@@ -2,7 +2,10 @@ package day3
 
 import (
 	"bufio"
+	"fmt"
 	"os"
+	"slices"
+	"strconv"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -207,5 +210,43 @@ var _ = Describe("Parsing numbers", func() {
 		// 598
 		hasSymbol = hasSymbolAround(9, parts[9][1], expectedSymbols)
 		Expect(hasSymbol).To(BeTrue())
+	})
+
+	It("gets all part numbers", func() {
+		f, err := os.Open("input.txt")
+		Expect(err).To(BeNil())
+		s := bufio.NewScanner(f)
+		parts, symbols = parsePartNumbers(s)
+
+		f, err = os.Open("all-parts.txt")
+		Expect(err).To(BeNil())
+		s = bufio.NewScanner(f)
+
+		var expectedParts []int
+		for s.Scan() {
+			text := s.Text()
+			number, err := strconv.Atoi(text)
+			Expect(err).To(BeNil())
+			expectedParts = append(expectedParts, number)
+		}
+
+		Expect(expectedParts).To(HaveLen(1211))
+		fmt.Printf("Parsed %d number from all-parts.txt", len(expectedParts))
+
+		var allPn []int
+		for _, v := range parts {
+			for _, part := range v {
+				allPn = append(allPn, part.number)
+			}
+		}
+
+		Expect(allPn).To(HaveLen(1211))
+		for _, v := range expectedParts {
+			if !slices.Contains(allPn, v) {
+				fmt.Printf("Expect part not found %d\n", v)
+			}
+		}
+
+		Expect(allPn).To(ContainElements(expectedParts))
 	})
 })

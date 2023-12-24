@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"slices"
 	"strconv"
 )
 
@@ -40,18 +39,22 @@ func Day3(input string) {
 	fmt.Printf("%d symbols parsed\n", len(sym))
 	vPn := getValidPartNumbers(pn, sym)
 
-	var allPn []int
-	for _, v := range pn {
-		for _, part := range v {
-			allPn = append(allPn, part.number)
-		}
-	}
+	// var allPn []int
+	// for _, v := range pn {
+	// 	for _, part := range v {
+	// 		allPn = append(allPn, part.number)
+	// 	}
+	// }
 
 	var sum int
-	for _, v := range allPn {
-		if slices.Contains(vPn, v) {
-			sum += v
-		}
+	// for _, v := range allPn {
+	// 	if slices.Contains(vPn, v) {
+	// 		sum += v
+	// 	}
+	// }
+
+	for _, v := range vPn {
+		sum += v
 	}
 	fmt.Printf("SUM = %d\n", sum)
 }
@@ -83,6 +86,24 @@ func parsePartNumbers(s *bufio.Scanner) (map[int][]*PartNumber, map[int][]*Symbo
 					prev += str
 				}
 				// fmt.Printf("\n")
+				if i == (len(text) - 1) {
+					partNumber, err := strconv.Atoi(prev)
+					if err != nil {
+						check(err)
+					}
+					newP := &PartNumber{
+						number: partNumber,
+						Location: &Location{
+							i - len(prev),
+							i - 1,
+						}}
+					if _, hasKey := parts[row]; !hasKey {
+						parts[row] = []*PartNumber{newP}
+					} else {
+						parts[row] = append(parts[row], newP)
+					}
+					totalParts++
+				}
 				prevWasInt = true
 			} else if prevWasInt {
 				partNumber, err := strconv.Atoi(prev)
