@@ -39,24 +39,12 @@ func Day3(input string) {
 	fmt.Printf("%d symbols parsed\n", len(sym))
 	vPn := getValidPartNumbers(pn, sym)
 
-	// var allPn []int
-	// for _, v := range pn {
-	// 	for _, part := range v {
-	// 		allPn = append(allPn, part.number)
-	// 	}
-	// }
-
-	var sum int
-	// for _, v := range allPn {
-	// 	if slices.Contains(vPn, v) {
-	// 		sum += v
-	// 	}
-	// }
+	var sumPn int
 
 	for _, v := range vPn {
-		sum += v
+		sumPn += v.number
 	}
-	fmt.Printf("SUM = %d\n", sum)
+	fmt.Printf("Sum of part numbers = %d\n", sumPn)
 }
 
 func parsePartNumbers(s *bufio.Scanner) (map[int][]*PartNumber, map[int][]*Symbol) {
@@ -172,16 +160,15 @@ func parsePartNumbers(s *bufio.Scanner) (map[int][]*PartNumber, map[int][]*Symbo
 	return parts, symbols
 }
 
-func getValidPartNumbers(parts map[int][]*PartNumber, symbols map[int][]*Symbol) []int {
-	var validParts []int
+func getValidPartNumbers(parts map[int][]*PartNumber, symbols map[int][]*Symbol) []*PartNumber {
+	var validParts []*PartNumber
 	for key, value := range parts {
 		for _, v := range value {
 			fmt.Printf("Part number: %d in row %d", v.number, key)
-			hasSymbol := hasSymbolAround(key, v, symbols)
-			if hasSymbol {
+			sConnected := getSymbolsConnected(key, v, symbols)
+			if len(sConnected) > 0 {
 				fmt.Printf(" is connected ✅\n")
-				// fmt.Printf("%d\n", v.number)
-				validParts = append(validParts, v.number)
+				validParts = append(validParts, v)
 			} else {
 				fmt.Printf(" not connected ❌\n")
 			}
@@ -191,8 +178,9 @@ func getValidPartNumbers(parts map[int][]*PartNumber, symbols map[int][]*Symbol)
 	return validParts
 }
 
-func hasSymbolAround(row int, part *PartNumber, symbols map[int][]*Symbol) bool {
+func getSymbolsConnected(row int, part *PartNumber, symbols map[int][]*Symbol) ([]*Symbol) {
 	r := []int{-1, 0, 1}
+	var gSymbols []*Symbol
 
 	if row == 0 {
 		r = []int{0, 1}
@@ -202,11 +190,12 @@ func hasSymbolAround(row int, part *PartNumber, symbols map[int][]*Symbol) bool 
 		if s, hasKey := symbols[row + v]; hasKey {
 			for i := 0; i < len(s); i++ {
 				if s[i].start >= part.start - 1 && s[i].start <= part.end + 1 {
-					return true
+					fmt.Printf("Found connnected symbol in row %d, index %d", row + v, i)
+					gSymbols = append(gSymbols, s[i])
 				}
 			}
 		}
 	}
 
-	return false
+	return gSymbols
 }

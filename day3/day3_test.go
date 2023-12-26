@@ -181,35 +181,35 @@ var _ = Describe("Parsing numbers", func() {
 
 	It("a part number with a symbol is detected", func() {
 		// 467
-		hasSymbol := hasSymbolAround(0, parts[0][0], expectedSymbols)
-		Expect(hasSymbol).To(BeTrue())
+		cSymbols := getSymbolsConnected(0, parts[0][0], expectedSymbols)
+		Expect(cSymbols).To(HaveLen(1))
 		// 114
-		hasSymbol = hasSymbolAround(0, parts[0][1], expectedSymbols)
-		Expect(hasSymbol).To(BeFalse())
+		cSymbols = getSymbolsConnected(0, parts[0][1], expectedSymbols)
+		Expect(cSymbols).To(HaveLen(0))
 		// 35
-		hasSymbol = hasSymbolAround(2, parts[2][0], expectedSymbols)
-		Expect(hasSymbol).To(BeTrue())
+		cSymbols = getSymbolsConnected(2, parts[2][0], expectedSymbols)
+		Expect(cSymbols).To(HaveLen(1))
 		// 633
-		hasSymbol = hasSymbolAround(2, parts[2][1], expectedSymbols)
-		Expect(hasSymbol).To(BeTrue())
+		cSymbols = getSymbolsConnected(2, parts[2][1], expectedSymbols)
+		Expect(cSymbols).To(HaveLen(1))
 		// 617
-		hasSymbol = hasSymbolAround(4, parts[4][0], expectedSymbols)
-		Expect(hasSymbol).To(BeTrue())
+		cSymbols = getSymbolsConnected(4, parts[4][0], expectedSymbols)
+		Expect(cSymbols).To(HaveLen(1))
 		// 58
-		hasSymbol = hasSymbolAround(5, parts[5][0], expectedSymbols)
-		Expect(hasSymbol).To(BeFalse())
+		cSymbols = getSymbolsConnected(5, parts[5][0], expectedSymbols)
+		Expect(cSymbols).To(HaveLen(0))
 		// 592
-		hasSymbol = hasSymbolAround(6, parts[6][0], expectedSymbols)
-		Expect(hasSymbol).To(BeTrue())
+		cSymbols = getSymbolsConnected(6, parts[6][0], expectedSymbols)
+		Expect(cSymbols).To(HaveLen(1))
 		// 755
-		hasSymbol = hasSymbolAround(7, parts[7][0], expectedSymbols)
-		Expect(hasSymbol).To(BeTrue())
+		cSymbols = getSymbolsConnected(7, parts[7][0], expectedSymbols)
+		Expect(cSymbols).To(HaveLen(1))
 		// 664
-		hasSymbol = hasSymbolAround(9, parts[9][0], expectedSymbols)
-		Expect(hasSymbol).To(BeTrue())
+		cSymbols = getSymbolsConnected(9, parts[9][0], expectedSymbols)
+		Expect(cSymbols).To(HaveLen(1))
 		// 598
-		hasSymbol = hasSymbolAround(9, parts[9][1], expectedSymbols)
-		Expect(hasSymbol).To(BeTrue())
+		cSymbols = getSymbolsConnected(9, parts[9][1], expectedSymbols)
+		Expect(cSymbols).To(HaveLen(1))
 	})
 
 	It("gets all part numbers", func() {
