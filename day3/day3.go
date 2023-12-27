@@ -18,9 +18,9 @@ type PartNumber struct {
 }
 
 type Symbol struct {
-	value 		string
+	value string
 	*Location
-	gParts		[]*PartNumber
+	gParts []*PartNumber
 }
 
 func check(e error) {
@@ -121,7 +121,7 @@ func parsePartNumbers(s *bufio.Scanner) (map[int][]*PartNumber, map[int][]*Symbo
 				} else {
 					parts[row] = append(parts[row], newP)
 				}
-				
+
 				if str != "." {
 					// fmt.Printf("Found symbol %s\n", str)
 					prev = str
@@ -134,11 +134,11 @@ func parsePartNumbers(s *bufio.Scanner) (map[int][]*PartNumber, map[int][]*Symbo
 					}
 					if _, hasKey := symbols[row]; !hasKey {
 						symbols[row] = []*Symbol{newSym}
-						} else {
-							symbols[row] = append(symbols[row], newSym)
-						}
-						totalSymbols++
+					} else {
+						symbols[row] = append(symbols[row], newSym)
 					}
+					totalSymbols++
+				}
 
 				totalParts++
 				prevWasInt = false
@@ -190,7 +190,7 @@ func getValidPartNumbers(parts map[int][]*PartNumber, symbols map[int][]*Symbol)
 	return validParts
 }
 
-func getSymbolsConnected(row int, part *PartNumber, symbols map[int][]*Symbol) ([]*Symbol) {
+func getSymbolsConnected(row int, part *PartNumber, symbols map[int][]*Symbol) []*Symbol {
 	r := []int{-1, 0, 1}
 	var gSymbols []*Symbol
 
@@ -199,10 +199,10 @@ func getSymbolsConnected(row int, part *PartNumber, symbols map[int][]*Symbol) (
 	}
 
 	for _, v := range r {
-		if s, hasKey := symbols[row + v]; hasKey {
+		if s, hasKey := symbols[row+v]; hasKey {
 			for i := 0; i < len(s); i++ {
-				if s[i].start >= part.start - 1 && s[i].start <= part.end + 1 {
-					fmt.Printf("Found connnected symbol in row %d, index %d\n", row + v, i)
+				if s[i].start >= part.start-1 && s[i].start <= part.end+1 {
+					fmt.Printf("Found connnected symbol in row %d, index %d\n", row+v, i)
 
 					if s[i].value == "*" {
 						fmt.Printf("Symbol is a gear (*) adding part %d, row %d, index %d\n", part.number, row, part.start)
