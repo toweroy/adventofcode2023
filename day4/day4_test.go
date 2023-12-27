@@ -15,7 +15,8 @@ var _ = Describe("Parsing cards", func() {
 		f, err := os.Open("example-input.txt")
 		Expect(err).To(BeNil())
 		s := bufio.NewScanner(f)
-		points = parseCards(s)
+		wCards, sCards := parseCards(s)
+		points = countScratchCardPoints(wCards, sCards)
 	})
 
 	It("can get sum of winning numbers", func() {

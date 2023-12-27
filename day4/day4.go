@@ -8,6 +8,10 @@ import (
 	"strings"
 )
 
+type Card struct {
+	numbers []int
+}
+
 func check(e error) {
 	if e != nil {
 		panic(e)
@@ -19,12 +23,12 @@ func Day4(input string) {
 	check(err)
 	s := bufio.NewScanner(f)
 	fmt.Printf("Day 4 - Part I\n")
-	points := parseCards(s)
+	wCards, sCards := parseCards(s)
+	points := countScratchCardPoints(wCards, sCards)
 	fmt.Printf("Points sum = %d\n", points)
 }
 
-func parseCards(s *bufio.Scanner) int {
-	var points int
+func parseCards(s *bufio.Scanner) (winningCards []*Card, scratchCards []*Card) {
 	var index int
 
 	for s.Scan() {
@@ -41,23 +45,35 @@ func parseCards(s *bufio.Scanner) int {
 		// [83][86][6][31][17][9][48][53]
 		sNumbers := toIntSlice(strings.Fields(s2[1]))
 
-		var sumCardPoints int
+		winningCards = append(winningCards, &Card{wNumbers})
+		scratchCards = append(scratchCards, &Card{sNumbers})
+	}
 
-		for _, sn := range sNumbers {
-			if contains(wNumbers, sn) {
-				if sumCardPoints != 0 {
-					sumCardPoints = sumCardPoints * 2
+	return winningCards, scratchCards
+}
+
+func countScratchCardPoints(winningCards []*Card, scratchCards []*Card) int {
+	var sumCardPoints int
+
+	for i, sn := range scratchCards {
+		var cardPoints int
+		for _, sc := range sn.numbers {
+			if contains(winningCards[i].numbers, sc) {
+				if cardPoints != 0 {
+					cardPoints = cardPoints * 2
 				} else {
-					sumCardPoints = 1
+					cardPoints = 1
 				}
 			}
 		}
-		fmt.Printf("Card %d is worth %d point(s)\n", index, sumCardPoints)
-		points += sumCardPoints
+
+		fmt.Printf("Card %d is worth %d point(s)\n", i+1, cardPoints)
+		sumCardPoints += cardPoints
 	}
 
-	return points
+	return sumCardPoints
 }
+
 func toIntSlice(input []string) (output []int) {
 	for _, v := range input {
 		value, err := strconv.Atoi(v)
