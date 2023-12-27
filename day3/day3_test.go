@@ -212,6 +212,18 @@ var _ = Describe("Parsing numbers", func() {
 		Expect(cSymbols).To(HaveLen(1))
 	})
 
+	It("can get gear symbols with connected numbers", func() {
+		getValidPartNumbers(parts, symbols)
+		Expect(symbols[1][0].gParts).To(ContainElement(parts[0][0]))
+		Expect(symbols[1][0].gParts).To(ContainElement(parts[2][0]))
+		Expect(symbols[3][0].gParts).To(BeNil())
+		Expect(symbols[4][0].gParts).To(ContainElement(parts[4][0]))
+		Expect(symbols[5][0].gParts).To(BeNil())
+		Expect(symbols[8][0].gParts).To(BeNil())
+		Expect(symbols[8][1].gParts).To(ContainElement(parts[7][0]))
+		Expect(symbols[8][1].gParts).To(ContainElement(parts[9][1]))
+	})
+
 	It("gets all part numbers", func() {
 		f, err := os.Open("input.txt")
 		Expect(err).To(BeNil())
